@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Phasmalist Souls Checklist</title>
 <style>
   :root{
@@ -26,7 +27,7 @@
     display:flex;
     justify-content:center;
   }
-  .app{width:100%; max-width:640px;}
+  .app{width:100%; max-width:960px;}
   h1{
     font-size:22px;
     letter-spacing:.04em;
@@ -87,6 +88,23 @@
     border-color:var(--gold);
   }
 
+  /* two column layout */
+  .layout{
+    display:flex;
+    gap:22px;
+    align-items:flex-start;
+  }
+  .list-col{
+    flex:1 1 380px;
+    min-width:0;
+  }
+  .preview-col{
+    flex:1 1 320px;
+    max-width:360px;
+    position:sticky;
+    top:20px;
+  }
+
   .list{
     border:1px solid var(--line);
     border-radius:8px;
@@ -96,16 +114,17 @@
   .row{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:8px;
     padding:9px 12px;
     border-bottom:1px solid var(--line);
-    cursor:pointer;
     font-family:system-ui,-apple-system,sans-serif;
+    cursor:pointer;
   }
   .row:last-child{border-bottom:none;}
   .row:hover{background:#242018;}
   .row.checked .name{color:var(--muted); text-decoration:line-through;}
   .row.checked{opacity:.6;}
+  .row.selected{background:#262112;}
 
   input[type=checkbox]{
     width:16px;
@@ -115,27 +134,32 @@
     cursor:pointer;
   }
 
-  .name-wrap{position:relative; flex:1; min-width:0;}
   .name{
     font-size:14.5px;
     color:var(--text);
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
-    display:block;
+    flex:1;
+    min-width:0;
   }
-  .tooltip-img{
-    display:none;
-    position:absolute;
-    left:0;
-    bottom:calc(100% + 8px);
-    width:180px;
-    border:1px solid var(--gold);
-    border-radius:4px;
-    box-shadow:0 6px 18px rgba(0,0,0,.6);
-    z-index:5;
+
+  .more-btn{
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:11px;
+    color:var(--muted);
+    background:transparent;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:2px 9px;
+    cursor:pointer;
+    flex-shrink:0;
   }
-  .name-wrap:hover .tooltip-img{display:block;}
+  .more-btn:hover, .more-btn.active{
+    color:var(--bg);
+    background:var(--gold);
+    border-color:var(--gold);
+  }
 
   .level{
     font-size:11.5px;
@@ -161,6 +185,94 @@
   .badge-mage{background:var(--mage);}
   .badge-all{background:var(--all);}
 
+  /* preview panel (desktop) */
+  .preview-empty{
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:12.5px;
+    color:var(--muted);
+    padding:22px 16px;
+    border:1px dashed var(--line);
+    border-radius:8px;
+    text-align:center;
+  }
+  .preview-card{
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:var(--panel);
+    padding:14px;
+    font-family:system-ui,-apple-system,sans-serif;
+  }
+  .preview-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+  }
+  .preview-title{
+    font-size:14.5px;
+    color:var(--gold);
+    font-family:Georgia, serif;
+  }
+  .preview-close{
+    background:none;
+    border:none;
+    color:var(--muted);
+    cursor:pointer;
+    font-size:17px;
+    line-height:1;
+    padding:0 2px;
+  }
+  .preview-close:hover{color:var(--text);}
+
+  .preview-images{
+    display:flex;
+    gap:8px;
+    margin-bottom:12px;
+  }
+  .preview-images img{
+    width:50%;
+    border-radius:6px;
+    border:1px solid var(--line);
+    display:block;
+    object-fit:cover;
+  }
+  .preview-images.single img{width:100%;}
+  .preview-noimg{
+    width:100%;
+    padding:26px 8px;
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    border:1px dashed var(--line);
+    border-radius:6px;
+  }
+
+  .preview-section{margin-bottom:10px;}
+  .preview-section:last-child{margin-bottom:0;}
+  .preview-section h4{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--muted);
+    margin:0 0 4px;
+    font-weight:normal;
+  }
+  .preview-section ul{
+    margin:0;
+    padding-left:16px;
+    font-size:12.5px;
+    line-height:1.5;
+    color:var(--text);
+  }
+
+  /* mobile inline detail */
+  .mobile-detail{
+    background:#191712;
+    border-bottom:1px solid var(--line);
+    padding:12px;
+    font-family:system-ui,-apple-system,sans-serif;
+  }
+
   .note{
     font-family:system-ui,-apple-system,sans-serif;
     font-size:11.5px;
@@ -169,16 +281,19 @@
     line-height:1.5;
   }
 
-  @media (max-width:420px){
+  @media (max-width:767px){
+    .preview-col{display:none;}
+    .layout{display:block;}
     .badge{width:52px; font-size:9.5px;}
     .level{width:28px;}
+    .more-btn{font-size:10px; padding:2px 7px;}
   }
 </style>
 </head>
 <body>
 <div class="app">
   <h1>Phasmalist Souls</h1>
-  <p class="sub">Check off each Soul once captured. Hover a name to see its portrait.</p>
+  <p class="sub">Check off each Soul once captured. Click "More" next to a name to preview it.</p>
 
   <div class="topbar">
     <div class="progress-wrap">
@@ -196,47 +311,97 @@
     <button data-type="All">Special</button>
   </div>
 
-  <div class="list" id="list"></div>
+  <div class="layout">
+    <div class="list-col">
+      <div class="list" id="list"></div>
+    </div>
+    <div class="preview-col" id="previewPanel"></div>
+  </div>
 
   <p class="note">Type (Warrior / Rogue / Mage) isn't labeled on the source page — it's inferred here from each Soul's listed combat strengths (e.g. Marksman + Light Armor → Rogue, Heavy Armor + Two-Handed → Warrior, Elementalism/Entropy/Psionics/Light Magic → Mage). Loram Waterblade uses "Everything" and is marked Special.</p>
 </div>
 
 <script>
 const souls = [
-  {id:"yera", name:"Yera Shadowsong", level:1, type:"Rogue", img:"images/yera.jpg"},
-  {id:"pyrean", name:"Pyrean Scout", level:2, type:"Rogue", img:"images/pyrean.jpg"},
-  {id:"frostbitten", name:"Frostbitten Ranger", level:3, type:"Rogue", img:"images/frostbitten.jpg"},
-  {id:"aeterna", name:"Aeterna Ambassador", level:4, type:"Rogue", img:"images/aeterna.jpg"},
-  {id:"nameless", name:"Nameless Soul", level:5, type:"Rogue", img:"images/nameless.jpg"},
+  {id:"yera", name:"Yera Shadowsong", level:1, type:"Rogue", img:"images/yera.jpg",
+    strengths:["Marksman","Light Armor","One-Handed"],
+    ingredients:["Skull","Bone Meal","Petty Soul Gem (Filled)","Longbow","3x Ectoplasm"]},
+  {id:"pyrean", name:"Pyrean Scout", level:2, type:"Rogue", img:"images/pyrean.jpg",
+    strengths:["Marksman","Light Armor"],
+    ingredients:["Bone Meal (1x if gauntlets are used, 2x if otherwise)","Lesser Soul Gem (Filled)","Oak Bow","Any piece of Pyrean Armor"]},
+  {id:"frostbitten", name:"Frostbitten Ranger", level:3, type:"Rogue", img:"images/frostbitten.jpg",
+    strengths:["Marksman","Light Armor"],
+    ingredients:["Bear Pelt","Ectoplasm","Common Soul Gem (Filled)","Rune Bow"]},
+  {id:"aeterna", name:"Aeterna Ambassador", level:4, type:"Rogue", img:"images/aeterna.jpg",
+    strengths:["Marksman","Light Armor"],
+    ingredients:["Endraelan Sugar Braid","Greater Soul Gem (Filled)"]},
+  {id:"nameless", name:"Nameless Soul", level:5, type:"Rogue", img:"images/nameless.jpg",
+    strengths:["Marksman","Light Armor","Heavy Armor"],
+    ingredients:["Bone Meal","Ghost Wrappings","Grand Soul Gem (Filled)","Powder Barrel","Bow of the Righteous Path"]},
 
-  {id:"vagrant", name:"Forgotten Vagrant", level:1, type:"Rogue", img:"images/vagrant.jpg"},
-  {id:"samael", name:"Samael Dal'Litzu", level:2, type:"Rogue", img:"images/samael.jpg"},
-  {id:"rhalaim", name:"Lost Rhalâim", level:3, type:"Rogue", img:"images/rhalaim.jpg"},
-  {id:"kilana", name:"Kilana Hammerblow", level:4, type:"Rogue", img:"images/kilana.jpg"},
-  {id:"petrified", name:"Petrified", level:5, type:"Rogue", img:"images/petrified.jpg"},
+  {id:"vagrant", name:"Forgotten Vagrant", level:1, type:"Rogue", img:"images/vagrant.jpg",
+    strengths:["One-Handed","Light Armor","Blocking"],
+    ingredients:["Petty Soul Gem (Filled)","Bloody Skull","Iron Dagger","2x Ectoplasm","3x Bone Meal"]},
+  {id:"samael", name:"Samael Dal'Litzu", level:2, type:"Rogue", img:"images/samael.jpg",
+    strengths:["One-Handed","Marksman","Elementalism","Light Magic"],
+    ingredients:["Ectoplasm","Winde","Lesser Soul Gem (Filled)","Rune Sword"]},
+  {id:"rhalaim", name:"Lost Rhalâim", level:3, type:"Rogue", img:"images/rhalaim.jpg",
+    strengths:["One-Handed","Marksman","Entropy","Psionics","Light Armor"],
+    ingredients:["Skull","Glimmerdust","Common Soul Gem (Filled)","40x Pennies"]},
+  {id:"kilana", name:"Kilana Hammerblow", level:4, type:"Rogue", img:"images/kilana.jpg",
+    strengths:["Two-Handed","Light Armor","Marksman"],
+    ingredients:["Bone Meal","Ectoplasm","Amethyst","Scalpel or Scissors"]},
+  {id:"petrified", name:"Petrified", level:5, type:"Rogue", img:"images/petrified.jpg",
+    strengths:["One-Handed","Light Armor","Entropy","Psionics","Elementalism"],
+    ingredients:["Invisibility Potion (Standard)","Ghost Wrappings","Grand Soul Gem (Filled)","Dagger of the Righteous Path","100x Pennies"]},
 
-  {id:"rugar", name:"Rugar Oneeye", level:1, type:"Warrior", img:"images/rugar.jpg"},
-  {id:"luzius", name:"Luzius the Jaws", level:2, type:"Warrior", img:"images/luzius.jpg"},
-  {id:"burnt", name:"Burnt Keeper", level:3, type:"Warrior", img:"images/burnt.jpg"},
-  {id:"zarah", name:"Zar'Ah", level:4, type:"Warrior", img:"images/zarah.jpg"},
-  {id:"tormented", name:"Tormented Soul", level:5, type:"Warrior", img:"images/tormented.jpg"},
+  {id:"rugar", name:"Rugar Oneeye", level:1, type:"Warrior", img:"images/rugar.jpg",
+    strengths:["Heavy Armor","Blocking","Two-Handed","One-Handed"],
+    ingredients:["Skull","Ectoplasm","Petty Soul Gem (Filled)","2x Iron Ingot","3x Bone Meal"]},
+  {id:"luzius", name:"Luzius the Jaws", level:2, type:"Warrior", img:"images/luzius.jpg",
+    strengths:["One-Handed","Two-Handed","Light Armor","Heavy Armor"],
+    ingredients:["Skull","Bone Meal","Lesser Soul Gem (Filled)","Rune Sword"]},
+  {id:"burnt", name:"Burnt Keeper", level:3, type:"Warrior", img:"images/burnt.jpg",
+    strengths:["One-Handed","Two-Handed","Blocking","Heavy Armor"],
+    ingredients:["Bone Meal","Common Soul Gem (Filled)","Keeper Longsword","Iron Ingot"]},
+  {id:"zarah", name:"Zar'Ah", level:4, type:"Warrior", img:"images/zarah.jpg",
+    strengths:["One-Handed","Two-Handed","Light Armor","Heavy Armor"],
+    ingredients:["Bone Meal","Lockpick","Greater Soul Gem (Filled)","Riverville's Mead","Silver Steel Greatsword"]},
+  {id:"tormented", name:"Tormented Soul", level:5, type:"Warrior", img:"images/tormented.jpg",
+    strengths:["One-Handed","Two-Handed","Blocking","Light Armor","Heavy Armor"],
+    ingredients:["Demon Heart","Ghost Wrappings","Grand Soul Gem (Filled)","Aeterna Battle Axe"]},
 
-  {id:"darijus", name:"Darijus Dal'Grin", level:1, type:"Mage", img:"images/darijus.jpg"},
-  {id:"marius", name:"Marius Dal'Goldenford", level:2, type:"Mage", img:"images/marius.jpg"},
-  {id:"denna", name:"Denna Frostheart", level:3, type:"Mage", img:"images/denna.jpg"},
-  {id:"simael", name:"Simael the Researcher", level:4, type:"Mage", img:"images/simael.jpg"},
-  {id:"starling", name:"Starling Navigator", level:5, type:"Mage", img:"images/starling.jpg"},
+  {id:"darijus", name:"Darijus Dal'Grin", level:1, type:"Mage", img:"images/darijus.jpg",
+    strengths:["Light Magic","Elementalism","Entropy","Psionics"],
+    ingredients:["Bone Meal","Fog Sponge","Ruined Book","Petty Soul Gem (Filled)","3x Ectoplasm"]},
+  {id:"marius", name:"Marius Dal'Goldenford", level:2, type:"Mage", img:"images/marius.jpg",
+    strengths:["Magic"],
+    ingredients:["Ectoplasm","Paper Roll","Lesser Soul Gem (Filled)","Encyclopedia Arcana - Magic, Part I"]},
+  {id:"denna", name:"Denna Frostheart", level:3, type:"Mage", img:"images/denna.jpg",
+    strengths:["Magic"],
+    ingredients:["Bone Meal","Paper Roll","Quil","Common Soul Gem (Filled)","Spell Tome: Ice Spike (Rank II)"]},
+  {id:"simael", name:"Simael the Researcher", level:4, type:"Mage", img:"images/simael.jpg",
+    strengths:["Magic"],
+    ingredients:["Fog Sponge","Inkwell","Greater Soul Gem (Filled)","Encyclopedia Arcana - Magic, Part II","2x Ectoplasm"]},
+  {id:"starling", name:"Starling Navigator", level:5, type:"Mage", img:"images/starling.jpg",
+    strengths:["Magic"],
+    ingredients:["Old Dynamo","Ghost Wrappings","Metal Ingot of an Ancient Nation","Grand Soul Gem (Filled)"]},
 
-  {id:"loram", name:"Loram Waterblade", level:6, type:"All", img:""}
+  {id:"loram", name:"Loram Waterblade", level:6, type:"All", img:"",
+    strengths:["Everything"],
+    ingredients:["None"]}
 ];
 
 const STORAGE_KEY = "phasmalist-souls-checklist";
 let state = {};
 let activeFilter = "all";
+let selectedId = null;
 
 const listEl = document.getElementById("list");
+const previewPanel = document.getElementById("previewPanel");
 const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
+const desktopQuery = window.matchMedia("(min-width: 768px)");
 
 function badgeClass(type){
   if(type==="Warrior") return "badge-warrior";
@@ -245,33 +410,120 @@ function badgeClass(type){
   return "badge-all";
 }
 
+function buildListSection(title, items){
+  const section = document.createElement("div");
+  section.className = "preview-section";
+  const h4 = document.createElement("h4");
+  h4.textContent = title;
+  section.appendChild(h4);
+  const ul = document.createElement("ul");
+  items.forEach(it=>{
+    const li = document.createElement("li");
+    li.textContent = it;
+    ul.appendChild(li);
+  });
+  section.appendChild(ul);
+  return section;
+}
+
+function buildDetailNode(soul, mobile){
+  const wrap = document.createElement("div");
+
+  const imgWrap = document.createElement("div");
+  imgWrap.className = "preview-images";
+
+  if(soul.img){
+    const img1 = document.createElement("img");
+    img1.src = soul.img;
+    img1.alt = soul.name;
+    img1.loading = "lazy";
+    img1.addEventListener("error", ()=>{ img1.remove(); if(imgWrap.children.length<=1) imgWrap.classList.add("single"); }, {once:true});
+    imgWrap.appendChild(img1);
+
+    if(!mobile){
+      const img2 = document.createElement("img");
+      img2.src = "images/" + soul.id + "2.jpg";
+      img2.alt = soul.name + " (alternate view)";
+      img2.loading = "lazy";
+      img2.addEventListener("error", ()=>{ img2.remove(); imgWrap.classList.add("single"); }, {once:true});
+      imgWrap.appendChild(img2);
+    } else {
+      imgWrap.classList.add("single");
+    }
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "preview-noimg";
+    placeholder.textContent = "No image available";
+    imgWrap.appendChild(placeholder);
+  }
+
+  wrap.appendChild(imgWrap);
+  wrap.appendChild(buildListSection("Strengths", soul.strengths));
+  wrap.appendChild(buildListSection("Talisman Ingredients", soul.ingredients));
+  return wrap;
+}
+
+function renderPreviewPanel(){
+  previewPanel.innerHTML = "";
+  if(!selectedId){
+    const empty = document.createElement("div");
+    empty.className = "preview-empty";
+    empty.textContent = 'Click "More" on a Soul to preview it here.';
+    previewPanel.appendChild(empty);
+    return;
+  }
+  const soul = souls.find(s=>s.id===selectedId);
+  if(!soul) return;
+
+  const card = document.createElement("div");
+  card.className = "preview-card";
+
+  const header = document.createElement("div");
+  header.className = "preview-header";
+  const title = document.createElement("span");
+  title.className = "preview-title";
+  title.textContent = soul.name + " — Lv " + soul.level;
+  const closeBtn = document.createElement("button");
+  closeBtn.className = "preview-close";
+  closeBtn.textContent = "\u00d7";
+  closeBtn.setAttribute("aria-label","Close preview");
+  closeBtn.addEventListener("click", ()=>{ selectedId = null; render(); });
+  header.appendChild(title);
+  header.appendChild(closeBtn);
+  card.appendChild(header);
+
+  card.appendChild(buildDetailNode(soul, false));
+  previewPanel.appendChild(card);
+}
+
 function render(){
+  const isDesktop = desktopQuery.matches;
   listEl.innerHTML = "";
   const visible = souls.filter(s => activeFilter==="all" || s.type===activeFilter);
+
   visible.forEach(s=>{
     const checked = !!state[s.id];
-    const row = document.createElement("label");
-    row.className = "row" + (checked ? " checked" : "");
+    const row = document.createElement("div");
+    row.className = "row" + (checked ? " checked" : "") + (selectedId===s.id ? " selected" : "");
 
     const cb = document.createElement("input");
     cb.type = "checkbox";
     cb.checked = checked;
     cb.addEventListener("change", ()=> toggle(s.id, cb.checked));
 
-    const nameWrap = document.createElement("span");
-    nameWrap.className = "name-wrap";
     const nameSpan = document.createElement("span");
     nameSpan.className = "name";
     nameSpan.textContent = s.name;
-    nameWrap.appendChild(nameSpan);
-    if(s.img){
-      const img = document.createElement("img");
-      img.className = "tooltip-img";
-      img.src = s.img;
-      img.loading = "lazy";
-      img.addEventListener("error", ()=>{ img.style.display = "none"; }, {once:true});
-      nameWrap.appendChild(img);
-    }
+
+    const moreBtn = document.createElement("button");
+    moreBtn.type = "button";
+    moreBtn.className = "more-btn" + (selectedId===s.id ? " active" : "");
+    moreBtn.textContent = "More";
+    moreBtn.addEventListener("click", (e)=>{
+      e.stopPropagation();
+      selectedId = (selectedId === s.id) ? null : s.id;
+      render();
+    });
 
     const lvl = document.createElement("span");
     lvl.className = "level";
@@ -281,12 +533,29 @@ function render(){
     badge.className = "badge " + badgeClass(s.type);
     badge.textContent = s.type === "All" ? "Special" : s.type;
 
+    row.addEventListener("click", (e)=>{
+      if(e.target.closest(".more-btn")) return;
+      if(e.target.tagName === "INPUT") return;
+      cb.checked = !cb.checked;
+      toggle(s.id, cb.checked);
+    });
+
     row.appendChild(cb);
-    row.appendChild(nameWrap);
+    row.appendChild(nameSpan);
+    row.appendChild(moreBtn);
     row.appendChild(lvl);
     row.appendChild(badge);
     listEl.appendChild(row);
+
+    if(!isDesktop && selectedId===s.id){
+      const detail = document.createElement("div");
+      detail.className = "mobile-detail";
+      detail.appendChild(buildDetailNode(s, true));
+      listEl.appendChild(detail);
+    }
   });
+
+  renderPreviewPanel();
   updateProgress();
 }
 
@@ -325,6 +594,12 @@ document.getElementById("filters").addEventListener("click", (e)=>{
   activeFilter = btn.dataset.type;
   render();
 });
+
+if(desktopQuery.addEventListener){
+  desktopQuery.addEventListener("change", render);
+} else if(desktopQuery.addListener){
+  desktopQuery.addListener(render);
+}
 
 async function init(){
   try{
