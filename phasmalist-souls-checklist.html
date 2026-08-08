@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Phasmalist Souls Checklist</title>
+<style>
+  :root{
+    --bg:#15140f;
+    --panel:#1d1b15;
+    --line:#332f24;
+    --text:#e9e2cf;
+    --muted:#9c9481;
+    --gold:#c9a24b;
+    --warrior:#a8524a;
+    --rogue:#6f8f5a;
+    --mage:#6b83b0;
+    --all:#b087c9;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    padding:24px 16px 60px;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Georgia, 'Times New Roman', serif;
+    display:flex;
+    justify-content:center;
+  }
+  .app{width:100%; max-width:640px;}
+  h1{
+    font-size:22px;
+    letter-spacing:.04em;
+    margin:0 0 4px;
+    color:var(--gold);
+    font-weight:normal;
+  }
+  .sub{
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:12.5px;
+    color:var(--muted);
+    margin:0 0 18px;
+  }
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+    font-family:system-ui,-apple-system,sans-serif;
+  }
+  .progress-wrap{flex:1;}
+  .progress-text{font-size:12.5px; color:var(--muted); margin-bottom:5px;}
+  .progress-bar{height:6px; background:var(--panel); border:1px solid var(--line); border-radius:3px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--gold); width:0%; transition:width .25s ease;}
+  button.reset{
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:12px;
+    background:transparent;
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:6px 10px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  button.reset:hover{color:var(--text); border-color:var(--gold);}
+
+  .filters{
+    display:flex;
+    gap:6px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+    font-family:system-ui,-apple-system,sans-serif;
+  }
+  .filters button{
+    font-size:12px;
+    background:var(--panel);
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:5px 12px;
+    cursor:pointer;
+  }
+  .filters button.active{
+    color:var(--bg);
+    background:var(--gold);
+    border-color:var(--gold);
+  }
+
+  .list{
+    border:1px solid var(--line);
+    border-radius:8px;
+    overflow:hidden;
+    background:var(--panel);
+  }
+  .row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:9px 12px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer;
+    font-family:system-ui,-apple-system,sans-serif;
+  }
+  .row:last-child{border-bottom:none;}
+  .row:hover{background:#242018;}
+  .row.checked .name{color:var(--muted); text-decoration:line-through;}
+  .row.checked{opacity:.6;}
+
+  input[type=checkbox]{
+    width:16px;
+    height:16px;
+    accent-color:var(--gold);
+    flex-shrink:0;
+    cursor:pointer;
+  }
+
+  .name-wrap{position:relative; flex:1; min-width:0;}
+  .name{
+    font-size:14.5px;
+    color:var(--text);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    display:block;
+  }
+  .tooltip-img{
+    display:none;
+    position:absolute;
+    left:0;
+    bottom:calc(100% + 8px);
+    width:180px;
+    border:1px solid var(--gold);
+    border-radius:4px;
+    box-shadow:0 6px 18px rgba(0,0,0,.6);
+    z-index:5;
+  }
+  .name-wrap:hover .tooltip-img{display:block;}
+
+  .level{
+    font-size:11.5px;
+    color:var(--muted);
+    width:34px;
+    text-align:center;
+    flex-shrink:0;
+  }
+
+  .badge{
+    font-size:10.5px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    padding:3px 8px;
+    border-radius:20px;
+    flex-shrink:0;
+    width:60px;
+    text-align:center;
+    color:#15140f;
+  }
+  .badge-warrior{background:var(--warrior);}
+  .badge-rogue{background:var(--rogue);}
+  .badge-mage{background:var(--mage);}
+  .badge-all{background:var(--all);}
+
+  .note{
+    font-family:system-ui,-apple-system,sans-serif;
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:14px;
+    line-height:1.5;
+  }
+
+  @media (max-width:420px){
+    .badge{width:52px; font-size:9.5px;}
+    .level{width:28px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Phasmalist Souls</h1>
+  <p class="sub">Check off each Soul once captured. Hover a name to see its portrait.</p>
+
+  <div class="topbar">
+    <div class="progress-wrap">
+      <div class="progress-text" id="progressText">0 / 21 captured</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+    <button class="reset" id="resetBtn">Reset</button>
+  </div>
+
+  <div class="filters" id="filters">
+    <button data-type="all" class="active">All</button>
+    <button data-type="Warrior">Warrior</button>
+    <button data-type="Rogue">Rogue</button>
+    <button data-type="Mage">Mage</button>
+    <button data-type="All">Special</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <p class="note">Type (Warrior / Rogue / Mage) isn't labeled on the source page — it's inferred here from each Soul's listed combat strengths (e.g. Marksman + Light Armor → Rogue, Heavy Armor + Two-Handed → Warrior, Elementalism/Entropy/Psionics/Light Magic → Mage). Loram Waterblade uses "Everything" and is marked Special.</p>
+</div>
+
+<script>
+const souls = [
+  {id:"yera", name:"Yera Shadowsong", level:1, type:"Rogue", img:"images/yera.jpg"},
+  {id:"pyrean", name:"Pyrean Scout", level:2, type:"Rogue", img:"images/pyrean.jpg"},
+  {id:"frostbitten", name:"Frostbitten Ranger", level:3, type:"Rogue", img:"images/frostbitten.jpg"},
+  {id:"aeterna", name:"Aeterna Ambassador", level:4, type:"Rogue", img:"images/aeterna.jpg"},
+  {id:"nameless", name:"Nameless Soul", level:5, type:"Rogue", img:"images/nameless.jpg"},
+
+  {id:"vagrant", name:"Forgotten Vagrant", level:1, type:"Rogue", img:"images/vagrant.jpg"},
+  {id:"samael", name:"Samael Dal'Litzu", level:2, type:"Rogue", img:"images/samael.jpg"},
+  {id:"rhalaim", name:"Lost Rhalâim", level:3, type:"Rogue", img:"images/rhalaim.jpg"},
+  {id:"kilana", name:"Kilana Hammerblow", level:4, type:"Rogue", img:"images/kilana.jpg"},
+  {id:"petrified", name:"Petrified", level:5, type:"Rogue", img:"images/petrified.jpg"},
+
+  {id:"rugar", name:"Rugar Oneeye", level:1, type:"Warrior", img:"images/rugar.jpg"},
+  {id:"luzius", name:"Luzius the Jaws", level:2, type:"Warrior", img:"images/luzius.jpg"},
+  {id:"burnt", name:"Burnt Keeper", level:3, type:"Warrior", img:"images/burnt.jpg"},
+  {id:"zarah", name:"Zar'Ah", level:4, type:"Warrior", img:"images/zarah.jpg"},
+  {id:"tormented", name:"Tormented Soul", level:5, type:"Warrior", img:"images/tormented.jpg"},
+
+  {id:"darijus", name:"Darijus Dal'Grin", level:1, type:"Mage", img:"images/darijus.jpg"},
+  {id:"marius", name:"Marius Dal'Goldenford", level:2, type:"Mage", img:"images/marius.jpg"},
+  {id:"denna", name:"Denna Frostheart", level:3, type:"Mage", img:"images/denna.jpg"},
+  {id:"simael", name:"Simael the Researcher", level:4, type:"Mage", img:"images/simael.jpg"},
+  {id:"starling", name:"Starling Navigator", level:5, type:"Mage", img:"images/starling.jpg"},
+
+  {id:"loram", name:"Loram Waterblade", level:6, type:"All", img:""}
+];
+
+const STORAGE_KEY = "phasmalist-souls-checklist";
+let state = {};
+let activeFilter = "all";
+
+const listEl = document.getElementById("list");
+const progressText = document.getElementById("progressText");
+const progressFill = document.getElementById("progressFill");
+
+function badgeClass(type){
+  if(type==="Warrior") return "badge-warrior";
+  if(type==="Rogue") return "badge-rogue";
+  if(type==="Mage") return "badge-mage";
+  return "badge-all";
+}
+
+function render(){
+  listEl.innerHTML = "";
+  const visible = souls.filter(s => activeFilter==="all" || s.type===activeFilter);
+  visible.forEach(s=>{
+    const checked = !!state[s.id];
+    const row = document.createElement("label");
+    row.className = "row" + (checked ? " checked" : "");
+
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = checked;
+    cb.addEventListener("change", ()=> toggle(s.id, cb.checked));
+
+    const nameWrap = document.createElement("span");
+    nameWrap.className = "name-wrap";
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "name";
+    nameSpan.textContent = s.name;
+    nameWrap.appendChild(nameSpan);
+    if(s.img){
+      const img = document.createElement("img");
+      img.className = "tooltip-img";
+      img.src = s.img;
+      img.loading = "lazy";
+      img.addEventListener("error", ()=>{ img.style.display = "none"; }, {once:true});
+      nameWrap.appendChild(img);
+    }
+
+    const lvl = document.createElement("span");
+    lvl.className = "level";
+    lvl.textContent = "Lv " + s.level;
+
+    const badge = document.createElement("span");
+    badge.className = "badge " + badgeClass(s.type);
+    badge.textContent = s.type === "All" ? "Special" : s.type;
+
+    row.appendChild(cb);
+    row.appendChild(nameWrap);
+    row.appendChild(lvl);
+    row.appendChild(badge);
+    listEl.appendChild(row);
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const total = souls.length;
+  const done = souls.filter(s=>state[s.id]).length;
+  progressText.textContent = done + " / " + total + " captured";
+  progressFill.style.width = (done/total*100) + "%";
+}
+
+async function toggle(id, val){
+  state[id] = val;
+  render();
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error("Save failed", e);
+  }
+}
+
+document.getElementById("resetBtn").addEventListener("click", async ()=>{
+  state = {};
+  render();
+  try{
+    await window.storage.set(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){
+    console.error("Reset save failed", e);
+  }
+});
+
+document.getElementById("filters").addEventListener("click", (e)=>{
+  const btn = e.target.closest("button");
+  if(!btn) return;
+  document.querySelectorAll("#filters button").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  activeFilter = btn.dataset.type;
+  render();
+});
+
+async function init(){
+  try{
+    const result = await window.storage.get(STORAGE_KEY);
+    if(result && result.value){
+      state = JSON.parse(result.value);
+    }
+  }catch(e){
+    state = {};
+  }
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
