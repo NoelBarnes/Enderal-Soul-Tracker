@@ -226,17 +226,19 @@
 
   .preview-images{
     display:flex;
+    flex-direction:column;
     gap:8px;
     margin-bottom:12px;
   }
   .preview-images img{
-    width:50%;
+    width:100%;
     border-radius:6px;
     border:1px solid var(--line);
     display:block;
-    object-fit:cover;
+    cursor:zoom-in;
+    transition:opacity .15s ease;
   }
-  .preview-images.single img{width:100%;}
+  .preview-images img:hover{opacity:.88;}
   .preview-noimg{
     width:100%;
     padding:26px 8px;
@@ -281,6 +283,47 @@
     line-height:1.5;
   }
 
+  .lightbox-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(10,9,6,.92);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    z-index:1000;
+    cursor:zoom-out;
+  }
+  .lightbox-overlay.open{display:flex;}
+  .lightbox-img{
+    max-width:92vw;
+    max-height:88vh;
+    border-radius:8px;
+    border:1px solid var(--line);
+    box-shadow:0 12px 42px rgba(0,0,0,.6);
+    cursor:default;
+  }
+  .lightbox-close{
+    position:fixed;
+    top:16px;
+    right:18px;
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:var(--panel);
+    border:1px solid var(--line);
+    color:var(--text);
+    font-size:24px;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:1001;
+    font-family:system-ui,-apple-system,sans-serif;
+  }
+  .lightbox-close:hover{color:var(--gold); border-color:var(--gold);}
+
   @media (max-width:767px){
     .preview-col{display:none;}
     .layout{display:block;}
@@ -316,6 +359,11 @@
       <div class="list" id="list"></div>
     </div>
     <div class="preview-col" id="previewPanel"></div>
+  </div>
+
+  <div class="lightbox-overlay" id="lightboxOverlay">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close fullscreen image" type="button">&times;</button>
+    <img class="lightbox-img" id="lightboxImg" alt="">
   </div>
 
   <p class="note">Type (Warrior / Rogue / Mage) isn't labeled on the source page — it's inferred here from each Soul's listed combat strengths (e.g. Marksman + Light Armor → Rogue, Heavy Armor + Two-Handed → Warrior, Elementalism/Entropy/Psionics/Light Magic → Mage). Loram Waterblade uses "Everything" and is marked Special.</p>
@@ -403,6 +451,27 @@ const progressText = document.getElementById("progressText");
 const progressFill = document.getElementById("progressFill");
 const desktopQuery = window.matchMedia("(min-width: 768px)");
 
+const lightboxOverlay = document.getElementById("lightboxOverlay");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxClose = document.getElementById("lightboxClose");
+
+function openLightbox(src, alt){
+  lightboxImg.src = src;
+  lightboxImg.alt = alt || "";
+  lightboxOverlay.classList.add("open");
+}
+function closeLightbox(){
+  lightboxOverlay.classList.remove("open");
+  lightboxImg.src = "";
+}
+lightboxClose.addEventListener("click", closeLightbox);
+lightboxOverlay.addEventListener("click", (e)=>{
+  if(e.target === lightboxOverlay) closeLightbox();
+});
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape") closeLightbox();
+});
+
 function badgeClass(type){
   if(type==="Warrior") return "badge-warrior";
   if(type==="Rogue") return "badge-rogue";
@@ -437,7 +506,8 @@ function buildDetailNode(soul, mobile){
     img1.src = soul.img;
     img1.alt = soul.name;
     img1.loading = "lazy";
-    img1.addEventListener("error", ()=>{ img1.remove(); if(imgWrap.children.length<=1) imgWrap.classList.add("single"); }, {once:true});
+    img1.addEventListener("error", ()=>{ img1.remove(); }, {once:true});
+    img1.addEventListener("click", ()=> openLightbox(img1.src, img1.alt));
     imgWrap.appendChild(img1);
 
     if(!mobile){
@@ -445,10 +515,9 @@ function buildDetailNode(soul, mobile){
       img2.src = "images/" + soul.id + "2.jpg";
       img2.alt = soul.name + " (alternate view)";
       img2.loading = "lazy";
-      img2.addEventListener("error", ()=>{ img2.remove(); imgWrap.classList.add("single"); }, {once:true});
+      img2.addEventListener("error", ()=>{ img2.remove(); }, {once:true});
+      img2.addEventListener("click", ()=> openLightbox(img2.src, img2.alt));
       imgWrap.appendChild(img2);
-    } else {
-      imgWrap.classList.add("single");
     }
   } else {
     const placeholder = document.createElement("div");
