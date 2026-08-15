@@ -13,7 +13,8 @@
     --muted:#9c9481;
     --gold:#c9a24b;
     --warrior:#a8524a;
-    --rogue:#6f8f5a;
+    --marksman:#5a9e97;
+    --mercenary:#6f8f5a;
     --mage:#6b83b0;
     --all:#b087c9;
   }
@@ -181,7 +182,8 @@
     color:#15140f;
   }
   .badge-warrior{background:var(--warrior);}
-  .badge-rogue{background:var(--rogue);}
+  .badge-marksman{background:var(--marksman);}
+  .badge-mercenary{background:var(--mercenary);}
   .badge-mage{background:var(--mage);}
   .badge-all{background:var(--all);}
 
@@ -324,6 +326,52 @@
   }
   .lightbox-close:hover{color:var(--gold); border-color:var(--gold);}
 
+  /* ============================================
+     Desktop enhancements — only apply at >=768px.
+     Nothing below this point touches mobile layout;
+     everything above remains exactly as before.
+     ============================================ */
+  @media (min-width:768px){
+    body{padding:48px 40px 90px;}
+    .app{max-width:1180px;}
+
+    h1{font-size:30px; letter-spacing:.05em; margin-bottom:6px;}
+    .sub{font-size:13.5px; margin-bottom:28px;}
+
+    .topbar{
+      padding:14px 20px;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:10px;
+      margin-bottom:22px;
+    }
+    .progress-bar{height:8px;}
+    button.reset{padding:8px 16px; font-size:12.5px; border-radius:6px; transition:border-color .15s ease, color .15s ease;}
+
+    .filters{margin-bottom:22px; gap:8px;}
+    .filters button{padding:7px 16px; font-size:12.5px; transition:border-color .15s ease, color .15s ease, background .15s ease;}
+    .filters button:hover:not(.active){border-color:var(--gold); color:var(--text);}
+
+    .layout{gap:30px;}
+
+    .list{border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.32);}
+    .row{padding:12px 18px; transition:background .12s ease;}
+    .row:hover{background:#252014;}
+    .name{font-size:15px;}
+    .badge{transition:transform .12s ease;}
+    .row:hover .badge{transform:translateY(-1px);}
+
+    .preview-col{max-width:420px;}
+    .preview-card{border-radius:10px; padding:20px; box-shadow:0 10px 30px rgba(0,0,0,.32);}
+    .preview-title{font-size:16.5px;}
+    .preview-images{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+    .preview-noimg{grid-column:1 / -1;}
+    .preview-section h4{font-size:11px;}
+    .preview-section ul{font-size:13px;}
+
+    .note{font-size:12px; max-width:820px;}
+  }
+
   @media (max-width:767px){
     .preview-col{display:none;}
     .layout{display:block;}
@@ -348,9 +396,10 @@
 
   <div class="filters" id="filters">
     <button data-type="all" class="active">All</button>
-    <button data-type="Warrior">Warrior</button>
-    <button data-type="Rogue">Rogue</button>
     <button data-type="Mage">Mage</button>
+    <button data-type="Marksman">Marksman</button>
+    <button data-type="Mercenary">Mercenary</button>
+    <button data-type="Warrior">Warrior</button>
     <button data-type="All">Special</button>
   </div>
 
@@ -366,44 +415,44 @@
     <img class="lightbox-img" id="lightboxImg" alt="">
   </div>
 
-  <p class="note">Type (Warrior / Rogue / Mage) isn't labeled on the source page — it's inferred here from each Soul's listed combat strengths (e.g. Marksman + Light Armor → Rogue, Heavy Armor + Two-Handed → Warrior, Elementalism/Entropy/Psionics/Light Magic → Mage). Loram Waterblade uses "Everything" and is marked Special.</p>
+  <p class="note">Type (Warrior / Marksman / Mercenary / Mage) isn't labeled on the source page — it's inferred here from each Soul's listed combat strengths and role (e.g. Heavy Armor + Two-Handed → Warrior, Elementalism/Entropy/Psionics/Light Magic → Mage, bow-focused scouts and specialists → Marksman, other light-armor combatants → Mercenary). Loram Waterblade uses "Everything" and is marked Special.</p>
 </div>
 
 <script>
 const souls = [
-  {id:"yera", name:"Yera Shadowsong", level:1, type:"Rogue", img:"images/yera.jpg",
+  {id:"yera", name:"Yera Shadowsong", level:1, type:"Marksman", img:"images/yera.jpg",
     strengths:["Marksman","Light Armor","One-Handed"],
     ingredients:["Skull","Bone Meal","Petty Soul Gem (Filled)","Longbow","3x Ectoplasm"]},
-  {id:"pyrean", name:"Pyrean Scout", level:2, type:"Rogue", img:"images/pyrean.jpg",
+  {id:"pyrean", name:"Pyrean Scout", level:2, type:"Marksman", img:"images/pyrean.jpg",
     strengths:["Marksman","Light Armor"],
     ingredients:["Bone Meal (1x if gauntlets are used, 2x if otherwise)","Lesser Soul Gem (Filled)","Oak Bow","Any piece of Pyrean Armor"]},
-  {id:"frostbitten", name:"Frostbitten Ranger", level:3, type:"Rogue", img:"images/frostbitten.jpg",
+  {id:"frostbitten", name:"Frostbitten Ranger", level:3, type:"Marksman", img:"images/frostbitten.jpg",
     strengths:["Marksman","Light Armor"],
     ingredients:["Bear Pelt","Ectoplasm","Common Soul Gem (Filled)","Rune Bow"]},
-  {id:"aeterna", name:"Aeterna Ambassador", level:4, type:"Rogue", img:"images/aeterna.jpg",
+  {id:"aeterna", name:"Aeterna Ambassador", level:4, type:"Marksman", img:"images/aeterna.jpg",
     strengths:["Marksman","Light Armor"],
     ingredients:["Endraelan Sugar Braid","Greater Soul Gem (Filled)"]},
-  {id:"nameless", name:"Nameless Soul", level:5, type:"Rogue", img:"images/nameless.jpg",
+  {id:"nameless", name:"Nameless Soul", level:5, type:"Marksman", img:"images/nameless.jpg",
     strengths:["Marksman","Light Armor","Heavy Armor"],
     ingredients:["Bone Meal","Ghost Wrappings","Grand Soul Gem (Filled)","Powder Barrel","Bow of the Righteous Path"]},
 
-  {id:"vagrant", name:"Forgotten Vagrant", level:1, type:"Rogue", img:"images/vagrant.jpg",
+  {id:"vagrant", name:"Forgotten Vagrant", level:1, type:"Mercenary", img:"images/vagrant.jpg",
     strengths:["One-Handed","Light Armor","Blocking"],
     ingredients:["Petty Soul Gem (Filled)","Bloody Skull","Iron Dagger","2x Ectoplasm","3x Bone Meal"]},
-  {id:"samael", name:"Samael Dal'Litzu", level:2, type:"Rogue", img:"images/samael.jpg",
+  {id:"samael", name:"Samael Dal'Litzu", level:2, type:"Mercenary", img:"images/samael.jpg",
     strengths:["One-Handed","Marksman","Elementalism","Light Magic"],
     ingredients:["Ectoplasm","Winde","Lesser Soul Gem (Filled)","Rune Sword"]},
-  {id:"rhalaim", name:"Lost Rhalâim", level:3, type:"Rogue", img:"images/rhalaim.jpg",
+  {id:"rhalaim", name:"Perished Rhalâim", level:3, type:"Mercenary", img:"images/rhalaim.jpg",
     strengths:["One-Handed","Marksman","Entropy","Psionics","Light Armor"],
     ingredients:["Skull","Glimmerdust","Common Soul Gem (Filled)","40x Pennies"]},
-  {id:"kilana", name:"Kilana Hammerblow", level:4, type:"Rogue", img:"images/kilana.jpg",
+  {id:"kilana", name:"Kilana Hammerblow", level:4, type:"Mercenary", img:"images/kilana.jpg",
     strengths:["Two-Handed","Light Armor","Marksman"],
     ingredients:["Bone Meal","Ectoplasm","Amethyst","Scalpel or Scissors"]},
-  {id:"petrified", name:"Petrified", level:5, type:"Rogue", img:"images/petrified.jpg",
+  {id:"petrified", name:"Petrified", level:5, type:"Mercenary", img:"images/petrified.jpg",
     strengths:["One-Handed","Light Armor","Entropy","Psionics","Elementalism"],
     ingredients:["Invisibility Potion (Standard)","Ghost Wrappings","Grand Soul Gem (Filled)","Dagger of the Righteous Path","100x Pennies"]},
 
-  {id:"rugar", name:"Rugar Oneeye", level:1, type:"Warrior", img:"images/rugar.jpg",
+  {id:"rugar", name:"Rugar Oneye", level:1, type:"Warrior", img:"images/rugar.jpg",
     strengths:["Heavy Armor","Blocking","Two-Handed","One-Handed"],
     ingredients:["Skull","Ectoplasm","Petty Soul Gem (Filled)","2x Iron Ingot","3x Bone Meal"]},
   {id:"luzius", name:"Luzius the Jaws", level:2, type:"Warrior", img:"images/luzius.jpg",
@@ -441,6 +490,7 @@ const souls = [
 ];
 
 const STORAGE_KEY = "phasmalist-souls-checklist";
+const FILTER_KEY = "phasmalist-souls-filter";
 let state = {};
 let activeFilter = "all";
 let selectedId = null;
@@ -474,10 +524,13 @@ document.addEventListener("keydown", (e)=>{
 
 function badgeClass(type){
   if(type==="Warrior") return "badge-warrior";
-  if(type==="Rogue") return "badge-rogue";
+  if(type==="Marksman") return "badge-marksman";
+  if(type==="Mercenary") return "badge-mercenary";
   if(type==="Mage") return "badge-mage";
   return "badge-all";
 }
+
+const TYPE_ORDER = {Mage:0, Marksman:1, Mercenary:2, Warrior:3, All:4};
 
 function buildListSection(title, items){
   const section = document.createElement("div");
@@ -568,7 +621,10 @@ function renderPreviewPanel(){
 function render(){
   const isDesktop = desktopQuery.matches;
   listEl.innerHTML = "";
-  const visible = souls.filter(s => activeFilter==="all" || s.type===activeFilter);
+  const visible = souls
+    .filter(s => activeFilter==="all" || s.type===activeFilter)
+    .slice()
+    .sort((a,b)=> (TYPE_ORDER[a.type] ?? 99) - (TYPE_ORDER[b.type] ?? 99) || a.level - b.level);
 
   visible.forEach(s=>{
     const checked = !!state[s.id];
@@ -635,24 +691,24 @@ function updateProgress(){
   progressFill.style.width = (done/total*100) + "%";
 }
 
-async function toggle(id, val){
-  state[id] = val;
-  render();
+function saveState(){
   try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   }catch(e){
     console.error("Save failed", e);
   }
 }
 
-document.getElementById("resetBtn").addEventListener("click", async ()=>{
+function toggle(id, val){
+  state[id] = val;
+  render();
+  saveState();
+}
+
+document.getElementById("resetBtn").addEventListener("click", ()=>{
   state = {};
   render();
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(state));
-  }catch(e){
-    console.error("Reset save failed", e);
-  }
+  saveState();
 });
 
 document.getElementById("filters").addEventListener("click", (e)=>{
@@ -662,6 +718,11 @@ document.getElementById("filters").addEventListener("click", (e)=>{
   btn.classList.add("active");
   activeFilter = btn.dataset.type;
   render();
+  try{
+    localStorage.setItem(FILTER_KEY, activeFilter);
+  }catch(e){
+    console.error("Filter save failed", e);
+  }
 });
 
 if(desktopQuery.addEventListener){
@@ -670,15 +731,30 @@ if(desktopQuery.addEventListener){
   desktopQuery.addListener(render);
 }
 
-async function init(){
+function init(){
   try{
-    const result = await window.storage.get(STORAGE_KEY);
-    if(result && result.value){
-      state = JSON.parse(result.value);
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      state = JSON.parse(raw);
     }
   }catch(e){
     state = {};
   }
+
+  try{
+    const savedFilter = localStorage.getItem(FILTER_KEY);
+    if(savedFilter){
+      const btn = document.querySelector('#filters button[data-type="' + CSS.escape(savedFilter) + '"]');
+      if(btn){
+        document.querySelectorAll("#filters button").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        activeFilter = savedFilter;
+      }
+    }
+  }catch(e){
+    // ignore, fall back to default filter
+  }
+
   render();
 }
 
